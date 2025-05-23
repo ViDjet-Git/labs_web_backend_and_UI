@@ -1,0 +1,191 @@
+openapi: 3.0.0
+info:
+  title: PrivateChatHub API
+  version: 1.0.0
+  description: |
+    PrivateChatHub — REST API для приватного обміну повідомленнями між зареєстрованими користувачами.
+
+    Основні можливості:
+    - Реєстрація та авторизація користувачів
+    - Створення та перегляд приватних чатів
+    - Надсилання та отримання повідомлень
+    - Видалення чатів
+    - Онлайн-статус (майбутнє оновлення)
+    
+servers:
+  - url: http://localhost:8000/api
+    description: Local development server
+
+tags:
+  - name: Authentication
+    description: Реєстрація та вхід
+  - name: Chats
+    description: Робота з чатами
+  - name: Messages
+    description: Повідомлення у чатах
+
+paths:
+  /register/:
+    post:
+      tags:
+        - Authentication
+      summary: Реєстрація нового користувача
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - email
+                - password
+              properties:
+                username:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '201':
+          description: Користувач створений
+        '400':
+          description: Невалідні дані
+
+  /login/:
+    post:
+      tags:
+        - Authentication
+      summary: Вхід користувача
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - password
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+      responses:
+        '200':
+          description: Успішний вхід
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  username:
+                    type: string
+                  email:
+                    type: string
+                  state:
+                    type: string
+                  token:
+                    type: string
+        '401':
+          description: Неправильні облікові дані
+
+  /create-chat/:
+    post:
+      tags:
+        - Chats
+      summary: Створення приватного чату
+      security:
+        - TokenAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                user_id:
+                  type: integer
+      responses:
+        '200':
+          description: Створено або повернено існуючий чат
+
+  /user-chats/:
+    get:
+      tags:
+        - Chats
+      summary: Список чатів користувача
+      security:
+        - TokenAuth: []
+      responses:
+        '200':
+          description: Список чатів
+
+  /chat/{chat_id}/messages/:
+    get:
+      tags:
+        - Messages
+      summary: Отримати всі повідомлення з чату
+      security:
+        - TokenAuth: []
+      parameters:
+        - name: chat_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Список повідомлень
+        '404':
+          description: Чат не знайдено
+
+  /chat/{chat_id}/delete/:
+    delete:
+      tags:
+        - Chats
+      summary: Видалити чат
+      security:
+        - TokenAuth: []
+      parameters:
+        - name: chat_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Видалено
+        '403':
+          description: Недостатньо прав
+        '404':
+          description: Чат не знайдено
+
+  /chat/{chat_id}/partner/:
+    get:
+      tags:
+        - Chats
+      summary: Отримати ім’я партнера по чату
+      security:
+        - TokenAuth: []
+      parameters:
+        - name: chat_id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Ім’я партнера
+        '404':
+          description: Чат не знайдено
+
+components:
+  securitySchemes:
+    TokenAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: Token
