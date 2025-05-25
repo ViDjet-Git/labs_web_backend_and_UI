@@ -20,12 +20,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-o(zr7^vnwbz%_woamv#%tv*niquy!@2a(2i=43jbagezb$1#c2'
+SECRET_KEY = 'key:)'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -84,6 +84,7 @@ CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
+    "http://10.0.2.2:8000",
 ]
 
 #AUTH_USER_MODEL = 'chat.User'
@@ -106,7 +107,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'webchat_db',
         'USER': 'postgres',
-        'PASSWORD': 'password',
+        'PASSWORD': 'password :)',
         'HOST': 'localhost',
         'PORT': '5432',
     }
